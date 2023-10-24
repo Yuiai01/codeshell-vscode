@@ -53,6 +53,4 @@ export class FetchStream {
         this.onerror?.(error);
       });
   }
-
-
 }
