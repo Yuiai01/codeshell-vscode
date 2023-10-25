@@ -13,7 +13,7 @@ export async function postEventStream(
   prompt: string,
   msgCallback: (data: string) => any,
   doneCallback: () => void,
-  errorCallback: (err: any) => void
+  errorCallback: (err: any) => void,
 ) {
   const serverAddress = workspace
     .getConfiguration('CodeShell')
