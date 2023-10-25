@@ -23,13 +23,13 @@ npm exec vsce package
 
 and it will create a visx package file like: `codeshell-vscode-${VERSION_NAME}.vsix`。
 
-##  Model Service
+## Model Service
 
 The [`llama_cpp_for_codeshell`](https://github.com/WisdomShell/llama_cpp_for_codeshell) project provides the 4-bit quantized model service of the [CodeShell](https://github.com/WisdomShell/codeshell) LLM, named `codeshell-chat-q4_0.gguf`. Here are the steps to deploy the model service:
 
 ### Compile the code
 
-+ Linux / Mac(Apple Silicon Devices)
+- Linux / Mac(Apple Silicon Devices)
 
   ```bash
   git clone https://github.com/WisdomShell/llama_cpp_for_codeshell.git
@@ -39,7 +39,7 @@ The [`llama_cpp_for_codeshell`](https://github.com/WisdomShell/llama_cpp_for_cod
 
   On macOS, Metal is enabled by default, which allows loading the model onto the GPU for significant performance improvements.
 
-+ Mac(Non Apple Silicon Devices)
+- Mac(Non Apple Silicon Devices)
 
   ```bash
   git clone https://github.com/WisdomShell/llama_cpp_for_codeshell.git
@@ -49,10 +49,9 @@ The [`llama_cpp_for_codeshell`](https://github.com/WisdomShell/llama_cpp_for_cod
 
   For Mac users with non-Apple Silicon chips, you can disable Metal builds during compilation using the CMake options `LLAMA_NO_METAL=1` or `LLAMA_METAL=OFF` to ensure the model runs properly.
 
-+ Windows
+- Windows
 
   You have the option to compile the code using the Linux approach within the [Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl/about) or you can follow the instructions provided in the [llama.cpp repository](https://github.com/ggerganov/llama.cpp#build). Another option is to configure [w64devkit](https://github.com/skeeto/w64devkit/releases) and then proceed with the Linux compilation method.
-
 
 ### Download the model
 
@@ -60,9 +59,9 @@ On the [Hugging Face Hub](https://huggingface.co/WisdomShell), we provide three 
 
 - To perform inference using the [CodeShell-7B-Chat-int4](https://huggingface.co/WisdomShell/CodeShell-7B-Chat-int4) model, download the model to your local machine and place it in the path of the `llama_cpp_for_codeshell/models` folder as indicated in the code above.
 
- ```
- git clone https://huggingface.co/WisdomShell/CodeShell-7B-Chat-int4/blob/main/codeshell-chat-q4_0.gguf
- ```
+```
+git clone https://huggingface.co/WisdomShell/CodeShell-7B-Chat-int4/blob/main/codeshell-chat-q4_0.gguf
+```
 
 - For performing inference using [CodeShell-7B](https://huggingface.co/WisdomShell/CodeShell-7B) and [CodeShell-7B-Chat](https://huggingface.co/WisdomShell/CodeShell-7B-Chat) models, after placing the models in a local folder, you can utilize [TGI (Text Generation Inference)](https://github.com/WisdomShell/text-generation-inference.git) to load these local models and initiate the model service.
 
@@ -105,8 +104,7 @@ docker run --gpus 'all' --shm-size 1g -p 9090:80 -v $HOME/models:/data \
 
 For a more detailed explanation of the parameters, please refer to the [text-generation-inference project documentation](https://github.com/huggingface/text-generation-inference).
 
-
-##  Configure the Plugin
+## Configure the Plugin
 
 - Set the address for the CodeShell service
 - Configure whether to enable automatic code completion suggestions
