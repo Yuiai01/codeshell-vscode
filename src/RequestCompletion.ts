@@ -10,7 +10,7 @@ export interface CompletionResponse {
 
 export async function postCompletion(
   fimPrefixCode: string,
-  fimSuffixCode: string
+  fimSuffixCode: string,
 ): Promise<string | undefined> {
   const serverAddress = workspace
     .getConfiguration('CodeShell')
@@ -34,7 +34,7 @@ export async function postCompletion(
     }
     const response = await axiosInstance.post<CompletionResponse>(
       serverAddress + '/infill',
-      data
+      data,
     )
     var content = ''
     const respData = response.data as string
@@ -49,12 +49,12 @@ export async function postCompletion(
   const prompt = `<fim_prefix>${fimPrefixCode}<fim_suffix>${fimSuffixCode}<fim_middle>`
   if ('GPU with TGI toolkit' == modelEnv) {
     let data = {
-        prompt,
-        user: "test",
+      prompt,
+      user: 'test',
     }
     const response = await axiosInstance.post<CompletionResponse>(
       serverAddress + '/generate',
-      data
+      data,
     )
     return response.data.generated_text?.replace('<|endoftext|>', '')
   }
@@ -71,7 +71,7 @@ axiosInstance.interceptors.request.use(
   },
   (error: any) => {
     return Promise.reject(error)
-  }
+  },
 )
 
 axiosInstance.interceptors.response.use(
@@ -80,5 +80,5 @@ axiosInstance.interceptors.response.use(
   },
   (error: any) => {
     return Promise.reject(error)
-  }
+  },
 )

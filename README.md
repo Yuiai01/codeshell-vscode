@@ -23,13 +23,13 @@ npm exec vsce package
 
 然后会得到一个名为`codeshell-vscode-${VERSION_NAME}.vsix`的文件。
 
-##  模型服务
+## 模型服务
 
 [`llama_cpp_for_codeshell`](https://github.com/WisdomShell/llama_cpp_for_codeshell)项目提供[CodeShell大模型](https://github.com/WisdomShell/codeshell) 4bits量化后的模型，模型名称为`codeshell-chat-q4_0.gguf`。以下为部署模型服务步骤：
 
 ### 编译代码
 
-+ Linux / Mac(Apple Silicon设备)
+- Linux / Mac(Apple Silicon设备)
 
   ```bash
   git clone https://github.com/WisdomShell/llama_cpp_for_codeshell.git
@@ -39,7 +39,7 @@ npm exec vsce package
 
   在 macOS 上，默认情况下启用了Metal，启用Metal可以将模型加载到 GPU 上运行，从而显著提升性能。
 
-+ Mac(非Apple Silicon设备)
+- Mac(非Apple Silicon设备)
 
   ```bash
   git clone https://github.com/WisdomShell/llama_cpp_for_codeshell.git
@@ -49,7 +49,7 @@ npm exec vsce package
 
   对于非 Apple Silicon 芯片的 Mac 用户，在编译时可以使用 `LLAMA_NO_METAL=1` 或 `LLAMA_METAL=OFF` 的 CMake 选项来禁用Metal构建，从而使模型正常运行。
 
-+ Windows
+- Windows
 
   您可以选择在[Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl/about)中按照Linux的方法编译代码，也可以选择参考[llama.cpp仓库](https://github.com/ggerganov/llama.cpp#build)中的方法，配置好[w64devkit](https://github.com/skeeto/w64devkit/releases)后再按照Linux的方法编译。
 
@@ -59,9 +59,9 @@ npm exec vsce package
 
 - 使用[CodeShell-7B-Chat-int4](https://huggingface.co/WisdomShell/CodeShell-7B-Chat-int4)模型推理，将模型下载到本地后并放置在以上代码中的 `llama_cpp_for_codeshell/models` 文件夹的路径
 
- ```
- git clone https://huggingface.co/WisdomShell/CodeShell-7B-Chat-int4/blob/main/codeshell-chat-q4_0.gguf
- ```
+```
+git clone https://huggingface.co/WisdomShell/CodeShell-7B-Chat-int4/blob/main/codeshell-chat-q4_0.gguf
+```
 
 - 使用[CodeShell-7B](https://huggingface.co/WisdomShell/CodeShell-7B)、[CodeShell-7B-Chat](https://huggingface.co/WisdomShell/CodeShell-7B-Chat)推理，将模型放置在本地文件夹后，使用[TGI](https://github.com/WisdomShell/text-generation-inference.git)加载本地模型，启动模型服务
 
@@ -108,7 +108,6 @@ docker run --gpus 'all' --shm-size 1g -p 9090:80 -v $HOME/models:/data \
 ```
 
 更详细的参数说明请参考[text-generation-inference项目文档](https://github.com/huggingface/text-generation-inference)。
-
 
 ## 配置插件
 
