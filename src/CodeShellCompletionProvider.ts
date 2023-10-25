@@ -24,13 +24,13 @@ export class CodeShellCompletionProvider
     this.statusBar = statusBar
   }
 
-  //@ts-ignore
   // because ASYNC and PROMISE
   public async provideInlineCompletionItems(
     document: TextDocument,
     position: Position,
     context: InlineCompletionContext,
     token: CancellationToken,
+    //@ts-ignore
   ): ProviderResult<InlineCompletionItem[] | InlineCompletionList> {
     let autoTriggerEnabled = workspace
       .getConfiguration('CodeShell')
