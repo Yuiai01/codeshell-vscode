@@ -19,10 +19,9 @@ export async function postEventStream(
     .getConfiguration('CodeShell')
     .get('ServerAddress') as string
 
-  const uri = '/stream_chat'
+  const uri = '/generate'
   const body = {
-    prompt: '生成一段javascript版本的斐波那契数列',
-    // prompt: prompt,
+    prompt,
     user: 100002,
   }
 

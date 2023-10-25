@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import * as prompt from "./CreatePrompt";
-import { ChatItem, HumanMessage, AIMessage, SessionItem, SessionStore } from "./ChatMemory";
+import { ChatItem, ChatMessage, SessionItem, SessionStore } from "./ChatMemory";
 import { postEventStream, stopEventStream } from "./RequestEventStream";
 
 export class CodeShellWebviewViewProvider implements vscode.WebviewViewProvider {
@@ -142,36 +142,33 @@ export class CodeShellWebviewViewProvider implements vscode.WebviewViewProvider 
 		};
 		this._view?.webview.postMessage({ type: "addQuestionAnswerDiv", value: eventData });
 
-		const humanMessage = new HumanMessage(question);
-		const aiMessage = new AIMessage("");
+		const humanMessage = new ChatMessage(question);
+		const aiMessage = new ChatMessage("");
 		const chatItem = new ChatItem(humanMessage, aiMessage);
 		this.sessionItem.addChatItem(chatItem);
 		this.generateAnswer(contentIndex);
 	}
 
-	private generateAnswer(index: number) {
+	private generateAnswer(index: number, format = true) {
 		const chatItem = this.sessionItem.chatList[index];
 		chatItem.aiMessage.content = "";
 		this.sessionStore.update(this.sessionItem);
-		const historyPrompt = this.sessionItem.getSlicePrompt(0, index);
 		const respData = {
 			"contentIndex": index,
 			"responseText": chatItem.aiMessage.content,
 			"aiMsgId": chatItem.aiMsgId,
 		};
-		console.log("historyPrompt:", historyPrompt);
-		postEventStream(historyPrompt, (data) => {
-			// const jsonData = JSON.parse(data);
-			chatItem.aiMessage.append(data);
-			// if (jsonData.content) {
-			// 	chatItem.aiMessage.append(jsonData.content);
-			// }
-			// if (jsonData.token) {
-			// 	chatItem.aiMessage.append(jsonData.token.text);
-			// }
-			// if (jsonData.id && jsonData.id !== "0") {
-			// 	chatItem.aiMsgId = jsonData.id;
-			// }
+		postEventStream(chatItem.humanMessage.content, (data) => {
+			const jsonData = JSON.parse(data);
+			if (jsonData.content) {
+				chatItem.aiMessage.append(jsonData.content);
+			}
+			if (jsonData.token) {
+				chatItem.aiMessage.append(jsonData.token.text);
+			}
+			if (jsonData.id && jsonData.id !== "0") {
+				chatItem.aiMsgId = jsonData.id;
+			}
 			respData.responseText = chatItem.aiMessage.content;
 			respData.aiMsgId = chatItem.aiMsgId;
 			this._view?.webview.postMessage({ type: "addStreamResponse", value: respData });

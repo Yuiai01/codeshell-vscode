@@ -1,44 +1,25 @@
 import { ExtensionContext } from "vscode";
 
 export class ChatMessage {
-    prefix?: string;
     content: string;
 
     constructor(content: string) {
         this.content = content;
     }
 
-    toString(): string {
-        return `${this.prefix}${this.content}`;
-    }
-}
-
-export class HumanMessage extends ChatMessage {
-    prefix = "## human:";
-}
-
-export class AIMessage extends ChatMessage {
-    prefix = "## assistant:";
-
     append(text: string) {
         this.content += text;
-        this.content = this.content.replace("|end|", "");
-        this.content = this.content.replace("|<end>|", "");
-        this.content = this.content.replace("<|endoftext|>", "");
     }
 }
 
 export class ChatItem {
-    humanMessage: HumanMessage;
-    aiMessage: AIMessage;
-    aiMsgId: string = "0";
-    constructor(humanMessage: HumanMessage, aiMessage: AIMessage) {
+    humanMessage: ChatMessage;
+    aiMessage: ChatMessage;
+    aiMsgId = "0";
+
+    constructor(humanMessage: ChatMessage, aiMessage: ChatMessage) {
         this.humanMessage = humanMessage;
         this.aiMessage = aiMessage;
-    }
-
-    toString(): string {
-        return `${this.humanMessage.toString()}|<end>|${this.aiMessage.toString()}`;
     }
 }
 
@@ -55,29 +36,14 @@ export class SessionItem {
 
     addChatList(list: ChatItem[]) {
         for (const chat of list) {
-            const hmMsg = new HumanMessage(chat.humanMessage.content);
-            const aiMsg = new AIMessage(chat.aiMessage.content);
+            const hmMsg = new ChatMessage(chat.humanMessage.content);
+            const aiMsg = new ChatMessage(chat.aiMessage.content);
             const item = new ChatItem(hmMsg, aiMsg);
             if (chat.aiMsgId) {
                 item.aiMsgId = chat.aiMsgId;
             }
             this.addChatItem(item);
         }
-    }
-
-    getSlicePrompt(start:number, end:number) {
-        let history = "";
-        for (let i = start; i <= end; i++) {
-            const chatItem = this.chatList[i];
-            if (history.length > 0) {
-                history += "\n";
-            }
-            history += chatItem.toString();
-            if (i < end) {
-                history += "|<end>|";
-            }
-        }
-        return history;
     }
 }
 
