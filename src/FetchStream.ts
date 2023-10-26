@@ -6,6 +6,17 @@ import {
 } from 'eventsource-parser'
 import { window } from 'vscode'
 
+export enum OperationType {
+  /** 代码生成 */
+  generate = 'generate',
+  /** 代码分析 */
+  analysis = 'analysis',
+  /** 代码优化 */
+  optimize = 'optimize',
+  /** 测试用例 */
+  ut = 'ut',
+}
+
 export interface FetchStreamOptions {
   url: string
   requestInit: RequestInit

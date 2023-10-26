@@ -1,13 +1,11 @@
 // The module "vscode" contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode'
-import { CodeShellCompletionProvider } from './CodeShellCompletionProvider'
 import { CodeShellWebviewViewProvider } from './CodeShellWebviewViewProvider'
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-  registerCompleteionExtension(context)
   registerWebviewViewExtension(context)
 }
 
@@ -26,72 +24,33 @@ function registerWebviewViewExtension(context: vscode.ExtensionContext) {
         webviewOptions: { retainContextWhenHidden: true },
       },
     ),
+    // 分析代码
     vscode.commands.registerCommand('codeshell.explain_this_code', () =>
       provider.executeCommand('codeshell.explain_this_code'),
     ),
+    // 优化代码
     vscode.commands.registerCommand('codeshell.improve_this_code', () =>
       provider.executeCommand('codeshell.improve_this_code'),
     ),
-    vscode.commands.registerCommand('codeshell.clean_this_code', () =>
-      provider.executeCommand('codeshell.clean_this_code'),
-    ),
-    vscode.commands.registerCommand('codeshell.generate_comment', () =>
-      provider.executeCommand('codeshell.generate_comment'),
-    ),
+    // 重写代码
+    // vscode.commands.registerCommand('codeshell.clean_this_code', () =>
+    //   provider.executeCommand('codeshell.clean_this_code'),
+    // ),
+    // 生成注释
+    // vscode.commands.registerCommand('codeshell.generate_comment', () =>
+    //   provider.executeCommand('codeshell.generate_comment'),
+    // ),
+    // 生成测试用例
     vscode.commands.registerCommand('codeshell.generate_unit_test', () =>
       provider.executeCommand('codeshell.generate_unit_test'),
     ),
-    vscode.commands.registerCommand('codeshell.check_performance', () =>
-      provider.executeCommand('codeshell.check_performance'),
-    ),
-    vscode.commands.registerCommand('codeshell.check_security', () =>
-      provider.executeCommand('codeshell.check_security'),
-    ),
+    // 检查性能问题
+    // vscode.commands.registerCommand('codeshell.check_performance', () =>
+    //   provider.executeCommand('codeshell.check_performance'),
+    // ),
+    // 检查按钮问题
+    // vscode.commands.registerCommand('codeshell.check_security', () =>
+    //   provider.executeCommand('codeshell.check_security'),
+    // ),
   )
-}
-
-function registerCompleteionExtension(context: vscode.ExtensionContext) {
-  const statusBar = vscode.window.createStatusBarItem(
-    vscode.StatusBarAlignment.Left,
-  )
-  statusBar.text = '$(lightbulb)'
-  statusBar.tooltip = `CodeShell - Ready`
-
-  const completionStatusCallback = (enabled: boolean) => async () => {
-    const configuration = vscode.workspace.getConfiguration()
-    const target = vscode.ConfigurationTarget.Global
-    configuration
-      .update('CodeShell.AutoTriggerCompletion', enabled, target, false)
-      .then(console.error)
-    var msg = enabled
-      ? '启用 自动触发代码补全（输入停止时触发）'
-      : '禁用 自动触发代码补全（可由快捷键触发）'
-    vscode.window.showInformationMessage(msg)
-    statusBar.show()
-  }
-
-  context.subscriptions.push(
-    vscode.languages.registerInlineCompletionItemProvider(
-      { pattern: '**' },
-      new CodeShellCompletionProvider(statusBar),
-    ),
-
-    vscode.commands.registerCommand(
-      'codeshell.auto_completion_enable',
-      completionStatusCallback(true),
-    ),
-    vscode.commands.registerCommand(
-      'codeshell.auto_completion_disable',
-      completionStatusCallback(false),
-    ),
-    statusBar,
-  )
-
-  if (
-    vscode.workspace.getConfiguration('CodeShell').get('AutoTriggerCompletion')
-  ) {
-    vscode.commands.executeCommand('codeshell.auto_completion_enable')
-  } else {
-    vscode.commands.executeCommand('codeshell.auto_completion_disable')
-  }
 }

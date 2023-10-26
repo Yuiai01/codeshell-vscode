@@ -2,7 +2,7 @@ export function createPromptCodeExplain(
   language: string,
   functionCode: string,
 ): string {
-  return `请解释以下${language}代码：\n\`\`\`${language}\n${functionCode}\n\`\`\`\n`
+  return `请解释分析以下${language}代码：\n\`\`\`${language}\n${functionCode}\n\`\`\`\n`
 }
 
 export function createPromptCodeImprove(

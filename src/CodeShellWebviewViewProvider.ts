@@ -2,6 +2,7 @@ import * as vscode from 'vscode'
 import * as prompt from './CreatePrompt'
 import { ChatItem, ChatMessage, SessionItem, SessionStore } from './ChatMemory'
 import { postEventStream, stopEventStream } from './RequestEventStream'
+import { OperationType } from './FetchStream'
 
 export class CodeShellWebviewViewProvider
   implements vscode.WebviewViewProvider
@@ -87,19 +88,26 @@ export class CodeShellWebviewViewProvider
       vscode.window.showErrorMessage('请选中一段代码！')
       return
     }
-    const languageId = vscode.window.activeTextEditor?.document.languageId
+    let languageId = vscode.window.activeTextEditor?.document.languageId
     if (!languageId) {
       vscode.window.showErrorMessage('无法确定语言类型！')
       return
+      // 这里获取 tsx 文件代码是获取到的语言是 typescriptreact，导致页面 UI 有问题，这里截取一下
+    } else if (languageId.includes('typescript')) {
+      languageId = 'typescript'
     }
 
+    let operation = OperationType.generate
     let humanPrompt = ''
+
     switch (command) {
       case 'codeshell.explain_this_code': {
+        operation = OperationType.analysis     
         humanPrompt = prompt.createPromptCodeExplain(languageId, selectedText)
         break
       }
       case 'codeshell.improve_this_code': {
+        operation = OperationType.optimize
         humanPrompt = prompt.createPromptCodeImprove(languageId, selectedText)
         break
       }
@@ -115,6 +123,7 @@ export class CodeShellWebviewViewProvider
         break
       }
       case 'codeshell.generate_unit_test': {
+        operation = OperationType.ut
         humanPrompt = prompt.createPromptGenerateUnitTest(
           languageId,
           selectedText,
@@ -140,10 +149,11 @@ export class CodeShellWebviewViewProvider
     } else {
       this._view?.show?.(true)
     }
-    this.startQuestion(humanPrompt)
+    
+    this.startQuestion(humanPrompt, operation)
   }
 
-  private startQuestion(question: string) {
+  private startQuestion(question: string, operation?: OperationType) {
     const contentIndex = this.sessionItem.chatList.length
     const divContent = this._makeQuestionAnswerDiv(contentIndex)
     const eventData = {
@@ -160,10 +170,10 @@ export class CodeShellWebviewViewProvider
     const aiMessage = new ChatMessage('')
     const chatItem = new ChatItem(humanMessage, aiMessage)
     this.sessionItem.addChatItem(chatItem)
-    this.generateAnswer(contentIndex)
+    this.generateAnswer(contentIndex, operation)
   }
 
-  private generateAnswer(index: number, format = true) {
+  private generateAnswer(index: number, operation = OperationType.generate) {
     const chatItem = this.sessionItem.chatList[index]
     chatItem.aiMessage.content = ''
     this.sessionStore.update(this.sessionItem)
@@ -174,6 +184,7 @@ export class CodeShellWebviewViewProvider
     }
     postEventStream(
       chatItem.humanMessage.content,
+      operation,
       data => {
         const jsonData = JSON.parse(data)
         if (jsonData.content) {

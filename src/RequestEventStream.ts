@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { workspace } from 'vscode'
-import { FetchStream } from './FetchStream'
+import { OperationType, FetchStream } from './FetchStream'
 import AbortController from 'abort-controller'
 
 let abortController = new AbortController()
@@ -11,6 +11,7 @@ export async function stopEventStream() {
 
 export async function postEventStream(
   prompt: string,
+  operation: OperationType,
   msgCallback: (data: string) => any,
   doneCallback: () => void,
   errorCallback: (err: any) => void,
@@ -19,7 +20,6 @@ export async function postEventStream(
     .getConfiguration('CodeShell')
     .get('ServerAddress') as string
 
-  const uri = '/generate'
   const body = {
     prompt,
     user: 100002,
@@ -27,7 +27,7 @@ export async function postEventStream(
 
   abortController = new AbortController()
   new FetchStream({
-    url: serverAddress + uri,
+    url: `${serverAddress}\\${operation}`,
     requestInit: {
       method: 'POST',
       headers: {
